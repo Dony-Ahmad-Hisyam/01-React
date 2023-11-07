@@ -3,6 +3,7 @@ import { Container, Row, Col, Table, Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+const token = localStorage.getItem("token");
 
 function Jurusan() {
   const [jrs, setJrsn] = useState([]);
@@ -17,7 +18,12 @@ function Jurusan() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/jurusan");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await axios.get("http://localhost:3000/api/jurusan", {
+        headers,
+      });
       const data = await response.data.data;
       setJrsn(data);
     } catch (error) {
@@ -39,9 +45,15 @@ function Jurusan() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:3000/api/jurusan/store", {
-        nama_jurusan: namaJurusan,
-      });
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      await axios.post(
+        "http://localhost:3000/api/jurusan/store",
+        { nama_jurusan: namaJurusan },
+        { headers }
+      );
+
       navigate("/jrsn");
       fetchData();
     } catch (error) {
@@ -86,11 +98,13 @@ function Jurusan() {
     }
 
     try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       await axios.patch(
         `http://localhost:3000/api/jurusan/update/${editData.id_j}`,
-        {
-          nama_jurusan: editData.nama_jurusan,
-        }
+        { nama_jurusan: editData.nama_jurusan },
+        { headers }
       );
 
       navigate("/jrsn");
@@ -104,9 +118,11 @@ function Jurusan() {
 
   const handleDelete = (id_j) => {
     console.log("Trying to delete data with ID:", id_j);
-
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
     axios
-      .delete(`http://localhost:3000/api/jurusan/delete/${id_j}`)
+      .delete(`http://localhost:3000/api/jurusan/delete/${id_j}`, { headers })
       .then((response) => {
         console.log("Data berhasil dihapus");
         const updatedJrs = jrs.filter((item) => item.id_j !== id_j);
@@ -152,12 +168,14 @@ function Jurusan() {
                     Edit
                   </button>
                 </td>
-                <button
-                  onClick={() => handleDelete(jr.id_j)}
-                  className="btn btn-sm btn-danger"
-                >
-                  Hapus
-                </button>
+                <td>
+                  <button
+                    onClick={() => handleDelete(jr.id_j)}
+                    className="btn btn-sm btn-danger"
+                  >
+                    Hapus
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

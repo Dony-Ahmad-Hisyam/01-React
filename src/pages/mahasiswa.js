@@ -3,6 +3,7 @@ import { Container, Row, Col, Table, Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+const token = localStorage.getItem("token");
 
 function Mahasiswa() {
   const [mhs, setMhs] = useState([]);
@@ -15,6 +16,7 @@ function Mahasiswa() {
   const [swa_foto, setSwaFoto] = useState(null);
   const [validation, setValidation] = useState({});
   const navigate = useNavigate();
+
   const url = "http://localhost:3000/static/";
 
   useEffect(() => {
@@ -23,11 +25,17 @@ function Mahasiswa() {
 
   const fetchData = async () => {
     try {
-      const response1 = await axios.get("http://localhost:3000/api/mhs");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response1 = await axios.get("http://localhost:3000/api/mhs", {
+        headers,
+      });
       const data1 = await response1.data.data;
       setMhs(data1);
-
-      const response2 = await axios.get("http://localhost:3000/api/jurusan");
+      const response2 = await axios.get("http://localhost:3000/api/jurusan", {
+        headers,
+      });
       const data2 = await response2.data.data;
       setJrsn(data2);
     } catch (error) {
@@ -75,9 +83,13 @@ function Mahasiswa() {
     formData.append("swa_foto", swa_foto);
 
     try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       await axios.post("http://localhost:3000/api/mhs/store", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       navigate("/mhs");
@@ -147,6 +159,7 @@ function Mahasiswa() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -161,7 +174,9 @@ function Mahasiswa() {
 
   const handleDelete = (id_m) => {
     axios
-      .delete(`http://localhost:3000/api/mhs/delete/${id_m}`)
+      .delete(`http://localhost:3000/api/mhs/delete/${id_m}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         console.log("Data berhasil dihapus");
         // Hapus item dari array data mhs

@@ -1,15 +1,25 @@
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Mahasiswa from "../pages/mahasiswa";
 import Jurusan from "../pages/Jurusan";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
 
 function Routing() {
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    console.log("berhasil Logout");
+    window.location.reload();
+  };
   return (
     <Router>
       <div>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light bg-success">
           <div className="container-fluid">
             <a className="navbar-brand" href="#">
-              Frontend
+              PENS PSDKU SM
             </a>
             <button
               className="navbar-toggler"
@@ -34,6 +44,19 @@ function Routing() {
                     Jurusan
                   </Link>
                 </li>
+                {isLoggedIn ? (
+                  <li className="nav-item">
+                    <Link className="nav-link" onClick={handleLogout}>
+                      Logout
+                    </Link>
+                  </li>
+                ) : (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/login">
+                      Login
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -42,6 +65,8 @@ function Routing() {
         <Routes>
           <Route path="/mhs" element={<Mahasiswa />} />
           <Route path="/jrsn" element={<Jurusan />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
     </Router>
